@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>校园便利店的暖光 - 消费偏好调研</title>
+    
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -14,67 +16,6 @@
             font-family: "微软雅黑", 宋体;
         }
 
-        <script>
- <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyBOAagrKu4ZhXZgs4nWZ-leDPiQx5DXpek",
-    authDomain: "campus-41e92.firebaseapp.com",
-    databaseURL: "https://campus-41e92-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "campus-41e92",
-    storageBucket: "campus-41e92.firebasestorage.app",
-    messagingSenderId: "128195751728",
-    appId: "1:128195751728:web:ac7ec123e9a77dee99e2f5"
-  };
-
-  const app = firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
-
-
-  document.getElementById('formspreeForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-  
-    document.getElementById('submitFormBtn').disabled = true;
-    document.getElementById('loadingText').style.display = 'block';
-    document.getElementById('errorMessage').style.display = 'none';
-    
-   
-    const formData = {
-      timestamp: new Date().toISOString(),
-      nickname: document.getElementById('nicknameHidden').value,
-      gender: document.getElementById('genderHidden').value,
-      ip_address: document.getElementById('ip_address').value,
-      user_agent: document.getElementById('user_agent').value,
-      answers: document.getElementById('answers').value
-    };
-    
-    
-    database.ref('responses').push(formData)
-      .then(() => {
-      
-        document.getElementById('loadingText').style.display = 'none';
-        document.getElementById('successMessage').style.display = 'block';
-        
-       
-        setTimeout(() => {
-          showResultPage();
-        }, 2000);
-      })
-      .catch((error) => {
-       
-        document.getElementById('loadingText').style.display = 'none';
-        document.getElementById('errorMessage').textContent = "提交失败: " + error.message;
-        document.getElementById('errorMessage').style.display = 'block';
-        document.getElementById('submitFormBtn').disabled = false;
-      });
-  });
-</script>
         body {
             color: #333;
             line-height: 1.6;
@@ -1775,5 +1716,41 @@ function loadSurveyData() {
             document.body.removeChild(link);
         });
     </script>
+<script>    
+messagingSenderId: "128195751728",    
+appId: "1:128195751728:web:ac7ec123e9a77dee99e2f5"  
+};
+  const app = firebase.initializeApp(firebaseConfig);  
+const database = firebase.database();
+
+  document.getElementById('formspreeForm').addEventListener('submit', function(e) {    
+e.preventDefault();          
+document.getElementById('submitFormBtn').disabled = true;    
+document.getElementById('loadingText').style.display = 'block';    
+document.getElementById('errorMessage').style.display = 'none';           
+const formData = {      
+timestamp: new Date().toISOString(),      
+nickname: document.getElementById('nicknameHidden').value,      
+gender: document.getElementById('genderHidden').value,      
+ip_address: document.getElementById('ip_address').value,      
+user_agent: document.getElementById('user_agent').value,      
+answers: document.getElementById('answers').value    
+};            
+database.ref('responses').push(formData)
+      .then(() => {              
+document.getElementById('loadingText').style.display = 'none';        
+document.getElementById('successMessage').style.display = 'block';                       
+setTimeout(() => {          
+showResultPage();        
+}, 2000);      
+})
+      .catch((error) => {               
+document.getElementById('loadingText').style.display = 'none';        
+document.getElementById('errorMessage').textContent = "提交失败: " + error.message;        
+document.getElementById('errorMessage').style.display = 'block';        
+document.getElementById('submitFormBtn').disabled = false;      
+});  
+});
+</script>
 </body>
 </html>
