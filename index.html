@@ -1563,17 +1563,20 @@
             }
         });
         
-        // 绑定密码验证事件
-        verifyBtn.addEventListener('click', () => {
-            if (adminPassword.value === ADMIN_PASSWORD) {
-                passwordModal.style.display = 'none';
-                loadSurveyData(); // 加载调研数据
-                dataView.style.display = 'block';
-            } else {
-                alert('密码错误，请重试');
-                adminPassword.value = '';
-                adminPassword.focus();
-            }
+
+    verifyBtn.addEventListener('click', () => {
+      const inputPwd = adminPassword.value.trim(); // 去掉密码前后空格
+      if (inputPwd === ADMIN_PASSWORD) {
+        // 正确逻辑：关闭密码模态框 → 显示数据页面 → 加载数据
+        passwordModal.style.display = 'none'; // 隐藏密码框
+        dataView.style.display = 'block'; // 显示管理员数据页面（关键：不要写startPage！）
+        loadSurveyData(); // 加载调研数据
+      } else {
+        alert('密码错误，请重试');
+        adminPassword.value = ''; // 清空输入框
+        adminPassword.focus(); // 让光标回到输入框
+      }
+    });
         });
         
         // 绑定返回按钮事件
