@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>校园便利店的暖光 - 消费偏好调研</title>
     
+    <!-- Firebase引入（只保留传统方式，无冲突） -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js"></script>
     
@@ -586,7 +587,7 @@
             line-height: 1.6;
         }
 
-        /* Formspree表单样式 */
+        /* Formspree表单样式（已修改为仅用于Firebase提交） */
         .formspree-form {
             display: flex;
             flex-direction: column;
@@ -949,7 +950,8 @@
         
         <input type="text" class="nickname-input" id="nicknameInput" placeholder="请输入您的昵称（可选）" maxlength="20">
         
-        <form class="formspree-form" id="formspreeForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <!-- 移除Formspree的action，只保留表单结构用于传递数据 -->
+        <form class="formspree-form" id="formspreeForm" method="POST">
             <!-- 隐藏输入框，用于传递用户选择 -->
             <input type="hidden" name="timestamp" id="timestamp" value="">
             <input type="hidden" name="nickname" id="nicknameHidden" value="">
@@ -982,6 +984,24 @@
     <div class="footer">
         校园便利店改进计划调研 &copy; 2025
     </div>
+
+    <!-- Firebase初始化（放在所有功能脚本之前，确保全局可访问） -->
+    <script>
+        // Firebase配置（用你自己的配置，已填入你提供的信息）
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOAagrKu4ZhXZgs4nWZ-ledPiQx5DXpek",
+            authDomain: "campus-41e92.firebaseapp.com",
+            databaseURL: "https://campus-41e92-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "campus-41e92",
+            storageBucket: "campus-41e92.firebasestorage.app",
+            messagingSenderId: "128195751728",
+            appId: "1:128195751728:web:ac7ec123e9a77dee99e2f5"
+        };
+
+        // 初始化Firebase（全局变量，所有脚本都能使用）
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+    </script>
 
     <script>
         // 🔥 核心优化：灵活的节点化数据结构
@@ -1361,8 +1381,8 @@
             storyDialog.style.display = 'none';
             submitPage.style.display = 'flex';
             
-            // 获取并设置IP地址（模拟，实际需要后端获取）
-            ipAddressInput.value = '192.168.1.1'; // 实际应用中应从后端获取
+            // 前端无法获取真实IP，改为显示"未知"
+            ipAddressInput.value = '未知（前端无法获取真实IP）';
             // 获取并设置用户代理
             userAgentInput.value = navigator.userAgent;
             // 设置时间戳
@@ -1374,49 +1394,6 @@
             nicknameInput.addEventListener('input', () => {
                 userNickname = nicknameInput.value.trim();
                 nicknameHidden.value = userNickname || '匿名用户';
-            });
-
-            // 表单提交事件
-            formspreeForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                // 保存答案到隐藏字段
-                answersInput.value = JSON.stringify(userAnswers);
-                
-                // 显示加载状态
-                submitFormBtn.disabled = true;
-                loadingText.style.display = 'block';
-                errorMessage.style.display = 'none';
-                
-                try {
-                    // 提交表单
-                    const response = await fetch(formspreeForm.action, {
-                        method: 'POST',
-                        body: new FormData(formspreeForm),
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        // 提交成功，显示结果页面
-                        loadingText.style.display = 'none';
-                        successMessage.style.display = 'block';
-                        
-                        // 延迟显示结果页面
-                        setTimeout(() => {
-                            showResultPage();
-                        }, 2000);
-                    } else {
-                        throw new Error('提交失败，请稍后再试');
-                    }
-                } catch (error) {
-                    // 显示错误信息
-                    loadingText.style.display = 'none';
-                    errorMessage.textContent = error.message;
-                    errorMessage.style.display = 'block';
-                    submitFormBtn.disabled = false;
-                }
             });
         }
 
@@ -1446,6 +1423,43 @@
                 preferencesList.appendChild(preferenceItem);
             });
         }
+    </script>
+
+    <!-- Firebase表单提交逻辑（替换原Formspree提交） -->
+    <script>
+        // 给表单绑定提交事件（仅Firebase提交，无双重提交）
+        document.getElementById('formspreeForm').addEventListener('submit', function(e) {
+            e.preventDefault();          
+            document.getElementById('submitFormBtn').disabled = true;    
+            document.getElementById('loadingText').style.display = 'block';    
+            document.getElementById('errorMessage').style.display = 'none';           
+            
+            // 收集表单数据
+            const formData = {      
+                timestamp: new Date().toISOString(),      
+                nickname: document.getElementById('nicknameHidden').value,      
+                gender: document.getElementById('genderHidden').value,      
+                ip_address: document.getElementById('ip_address').value,      
+                user_agent: document.getElementById('user_agent').value,      
+                answers: document.getElementById('answers').value    
+            };            
+            
+            // 保存数据到Firebase
+            database.ref('responses').push(formData)
+                .then(() => {              
+                    document.getElementById('loadingText').style.display = 'none';        
+                    document.getElementById('successMessage').style.display = 'block';                       
+                    setTimeout(() => {          
+                        showResultPage();        
+                    }, 2000);      
+                })
+                .catch((error) => {               
+                    document.getElementById('loadingText').style.display = 'none';        
+                    document.getElementById('errorMessage').textContent = "提交失败: " + error.message;        
+                    document.getElementById('errorMessage').style.display = 'block';        
+                    document.getElementById('submitFormBtn').disabled = false;      
+                });  
+        });
     </script>
 
     <!-- 管理员入口及数据查看功能 -->
@@ -1512,7 +1526,7 @@
 
     <script>
         // 管理员功能相关变量
-        const ADMIN_PASSWORD = "admin123"; // 请务必修改为安全的密码
+        const ADMIN_PASSWORD = "admin123"; // 请务必修改为安全的密码（建议改成复杂密码）
         let surveyData = []; // 存储所有调研数据
         
         // DOM元素
@@ -1567,25 +1581,25 @@
             dataView.style.display = 'none';
         });
         
-       // 加载调研数据（从Firebase）
-function loadSurveyData() {
-    // 从Firebase加载数据
-    database.ref('responses').once('value')
-      .then((snapshot) => {
-        const data = snapshot.val();
-        surveyData = data ? Object.values(data) : [];
-        
-        // 更新统计信息
-        updateStatistics();
-        
-        // 更新数据表格
-        updateDataView();
-      })
-      .catch((error) => {
-        console.error("加载数据失败: ", error);
-        alert("加载数据失败，请重试");
-      });
-}
+        // 加载调研数据（从Firebase）
+        function loadSurveyData() {
+            // 从Firebase加载数据
+            database.ref('responses').once('value')
+              .then((snapshot) => {
+                const data = snapshot.val();
+                surveyData = data ? Object.values(data) : [];
+                
+                // 更新统计信息
+                updateStatistics();
+                
+                // 更新数据表格
+                updateDataView();
+              })
+              .catch((error) => {
+                console.error("加载数据失败: ", error);
+                alert("加载数据失败，请重试");
+              });
+        }
         
         // 更新统计信息
         function updateStatistics() {
@@ -1657,7 +1671,8 @@ function loadSurveyData() {
                 <strong>时间：</strong>${new Date(item.timestamp).toLocaleString()}<br>
                 <strong>昵称：</strong>${item.nickname || '匿名用户'}<br>
                 <strong>性别：</strong>${item.gender === 'male' ? '男生' : '女生'}<br>
-                <br><strong> answers：</strong><br>
+                <strong>IP地址：</strong>${item.ip_address}<br>
+                <br><strong>回答详情：</strong><br>
             `;
             
             try {
@@ -1680,12 +1695,13 @@ function loadSurveyData() {
             }
             
             // 构建CSV内容
-            let csvContent = "序号,时间,昵称,性别, answers\n";
+            let csvContent = "序号,时间,昵称,性别,IP地址,回答详情\n";
             
             surveyData.forEach((item, index) => {
                 const date = new Date(item.timestamp).toLocaleString();
                 const nickname = item.nickname || '匿名用户';
                 const gender = item.gender === 'male' ? '男生' : '女生';
+                const ip = item.ip_address;
                 
                 // 处理answers中的引号和逗号
                 let answers = '';
@@ -1701,7 +1717,7 @@ function loadSurveyData() {
                 // 替换双引号为两个双引号（CSV转义）
                 answers = answers.replace(/"/g, '""');
                 
-                csvContent += `${index + 1},"${date}","${nickname}","${gender}","${answers}"\n`;
+                csvContent += `${index + 1},"${date}","${nickname}","${gender}","${ip}","${answers}"\n`;
             });
             
             // 创建并下载CSV文件
@@ -1716,41 +1732,5 @@ function loadSurveyData() {
             document.body.removeChild(link);
         });
     </script>
-<script>    
-messagingSenderId: "128195751728",    
-appId: "1:128195751728:web:ac7ec123e9a77dee99e2f5"  
-};
-  const app = firebase.initializeApp(firebaseConfig);  
-const database = firebase.database();
-
-  document.getElementById('formspreeForm').addEventListener('submit', function(e) {    
-e.preventDefault();          
-document.getElementById('submitFormBtn').disabled = true;    
-document.getElementById('loadingText').style.display = 'block';    
-document.getElementById('errorMessage').style.display = 'none';           
-const formData = {      
-timestamp: new Date().toISOString(),      
-nickname: document.getElementById('nicknameHidden').value,      
-gender: document.getElementById('genderHidden').value,      
-ip_address: document.getElementById('ip_address').value,      
-user_agent: document.getElementById('user_agent').value,      
-answers: document.getElementById('answers').value    
-};            
-database.ref('responses').push(formData)
-      .then(() => {              
-document.getElementById('loadingText').style.display = 'none';        
-document.getElementById('successMessage').style.display = 'block';                       
-setTimeout(() => {          
-showResultPage();        
-}, 2000);      
-})
-      .catch((error) => {               
-document.getElementById('loadingText').style.display = 'none';        
-document.getElementById('errorMessage').textContent = "提交失败: " + error.message;        
-document.getElementById('errorMessage').style.display = 'block';        
-document.getElementById('submitFormBtn').disabled = false;      
-});  
-});
-</script>
 </body>
 </html>
