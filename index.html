@@ -1327,7 +1327,7 @@
                     // 保存答案
                     userAnswers[questionNode.id] = {
                         question: questionNode.text,
-                        answer: option,
+                        answer: option.charAt(0),
                         timestamp: new Date().toISOString()
                     };
                     
@@ -1733,3 +1733,4 @@
     </script>
 </body>
 </html>
+
