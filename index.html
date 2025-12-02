@@ -1658,34 +1658,33 @@
         // 显示详情
        function showDetails(index) {
          const item = surveyData[index];
-  // 基础信息部分
+         // 基础信息部分：用\n换行，去掉HTML标签
          let details = `
-           <strong>时间：</strong>${new Date(item.timestamp).toLocaleString()}<br>
-           <strong>昵称：</strong>${item.nickname || '匿名用户'}<br>
-           <strong>性别：</strong>${item.gender === 'male' ? '男生' : '女生'}<br>
-           <strong>IP地址：</strong>${item.ip_address}<br>
-           <br><strong>回答详情：</strong><br>
-         `;
+       时间：${new Date(item.timestamp).toLocaleString()}
+       昵称：${item.nickname || '匿名用户'}
+       性别：${item.gender === 'male' ? '男生' : '女生'}
+       IP地址：${item.ip_address}
+
+       回答详情：
+       `;
 
          try {
-    // 关键：解析answers（必须是有效的JSON）
            const answers = JSON.parse(item.answers);
-    
-    // 如果解析后有数据，遍历显示每个问题+答案
            if (Object.keys(answers).length > 0) {
              Object.values(answers).forEach(ans => {
-               details += `- ${ans.question}<br>  你的选择：${ans.answer}<br><br>`;
+               // 用\n换行，去掉<br>标签
+               details += `- ${ans.question}\n  你的选择：${ans.answer}\n\n`;
              });
            } else {
              details += "暂无答题数据";
            }
          } catch (error) {
-    // 解析失败的情况（比如answers不是JSON）
-           details += `数据解析失败：${error.message}<br>原始数据：${item.answers}`;
+           // 解析失败部分：用\n替换<br>
+           details += `数据解析失败：${error.message}\n原始数据：${item.answers}`;
          }
 
-  alert(details);
-}
+         alert(details);
+       }
         
         // 导出数据为CSV
         exportBtn.addEventListener('click', () => {
