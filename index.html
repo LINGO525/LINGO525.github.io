@@ -1374,6 +1374,8 @@
             userAgentInput.value = navigator.userAgent;
             // 设置时间戳
             timestampInput.value = new Date().toISOString();
+            // 关键：将用户答题答案（userAnswers）转成JSON字符串，赋值给answers隐藏输入框
+            answersInput.value = JSON.stringify(userAnswers || {});
             // 设置性别
             genderHidden.value = userGender;
 
