@@ -2168,6 +2168,47 @@
             link.click();
             document.body.removeChild(link);
         });
+        // 预加载所有立绘图片（提升加载速度）
+       function preloadSprites() {
+      // 列出所有需要的立绘路径（替换成你实际的立绘文件名）
+         const allSprites = [
+           // 立绘
+           '209_107.jpg',
+           '210_107.jpg',
+           '211_107.jpg',
+           '212_107.jpg',
+           '213_107.jpg',
+           '214_107.jpg',
+           '215_107.jpg',
+           '216_107.jpg',
+           '217_107.jpg',
+           '218_107.jpg',
+           '219_107.jpg',
+           '220_107.jpg',
+           '221_107.jpg',
+           '222_107.jpg',
+           '223_107.jpg',
+           '224_107.jpg',
+           '225_107.jpg',
+           '226_107.jpg',
+           '228_107.jpg',
+           '229_107.jpg',
+           '230_107.jpg',
+           '231_107.jpg',
+         ];
+   
+         // 预加载每个图片（浏览器会提前缓存）
+         allSprites.forEach(spritePath => {
+           const img = new Image();
+           img.src = spritePath; // 提前请求图片
+         });
+       }
+   
+       // 页面加载完成后，立即预加载立绘
+       window.addEventListener('load', () => {
+         preloadSprites(); // 先预加载立绘
+         customerSystem.init(); // 再初始化小人系统（原有的代码）
+       });
     </script>
 </body>
 </html>
