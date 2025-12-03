@@ -1763,9 +1763,10 @@
                     
                     // 保存答案
                     userAnswers[questionNode.id] = {
-                        question: questionNode.text,
-                        answer: option.charAt(0),
-                        timestamp: new Date().toISOString()
+                      question: questionNode.text,
+                      answer: option.charAt(0), // 选项字母（管理端/Firebase用）
+                      fullAnswer: option, // 完整选项文本（被试用）
+                      timestamp: new Date().toISOString()
                     };
                     
                     // 延迟进入下一个节点，增加交互体验
@@ -1842,7 +1843,7 @@
                 
                 const answer = document.createElement('div');
                 answer.className = 'preference-answer';
-                answer.textContent = `你的选择：${item.answer}`;
+                answer.textContent = `你的选择：${item.fullAnswer}`;
                 
                 preferenceItem.appendChild(question);
                 preferenceItem.appendChild(answer);
