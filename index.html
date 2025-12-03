@@ -1697,26 +1697,31 @@
          * 渲染立绘
          * @param {Object} node - 当前节点数据
          */
-        function renderSprite(node) {
-            if (!node.sprite) {
-                spriteContainer.innerHTML = '';
-                return;
-            }
-            
-            // 创建立绘元素
-            const spriteImg = document.createElement('img');
-            spriteImg.className = 'sprite-image';
-            spriteImg.src = node.sprite.image;
-            
-            // 清空容器并添加新图片
-            spriteContainer.innerHTML = '';
-            spriteContainer.appendChild(spriteImg);
-            
-            // 触发动画
-            setTimeout(() => {
-                spriteImg.classList.add('visible');
-            }, 100);
-        }
+          function renderSprite(node) {
+       if (!node.sprite) {
+           spriteContainer.innerHTML = '';
+           return;
+       }
+    
+       const spriteImg = document.createElement('img');
+       spriteImg.className = 'sprite-image';
+    // 先设置透明占位图（避免加载空白）
+       spriteImg.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+       spriteImg.style.opacity = 0;
+    
+    // 延迟加载真实立绘图片
+       setTimeout(() => {
+           spriteImg.src = node.sprite.image;
+        // 图片加载完成后再显示动画
+           spriteImg.onload = () => {
+               spriteImg.classList.add('visible');
+           };
+       }, 100);
+    
+    // 清空容器并添加图片元素
+       spriteContainer.innerHTML = '';
+       spriteContainer.appendChild(spriteImg);
+   }
 
         /**
          * 渲染剧情节点
